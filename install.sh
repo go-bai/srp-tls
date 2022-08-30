@@ -1,9 +1,11 @@
 #!/bin/sh
 
-rm -rf /etc/srp-tls
-mkdir /etc/srp-tls/ -p
+if [ ! -d "/etc/srp-tls" ]; then
+    mkdir /etc/srp-tls/ -p
+fi
 
 go mod tidy && go build -o srp-tls
+rm -f /etc/srp-tls/srp-tls
 mv srp-tls /etc/srp-tls/
 
 cat > /etc/systemd/system/srp-tls.service << EOF
