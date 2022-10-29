@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"log"
 	"net/http"
 	"net/http/httputil"
@@ -47,7 +48,20 @@ func init() {
 }
 
 func main() {
-	r := gin.Default()
+	r := gin.New()
+	r.Use(gin.LoggerWithFormatter(func(param gin.LogFormatterParams) string {
+		return fmt.Sprintf("%s - %s %d %s %s %s %s %s\n",
+			param.ClientIP,
+			param.Method,
+			param.StatusCode,
+			param.Request.Host,
+			param.Path,
+			param.Request.Proto,
+			param.Latency,
+			param.ErrorMessage,
+		)
+	}))
+	r.Use(gin.Recovery())
 	r.Any("/*proxyPath", proxy)
 
 	m := autocert.Manager{
